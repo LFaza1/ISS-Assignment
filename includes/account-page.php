@@ -56,53 +56,59 @@ if ($action === "add_account") {
     $action = "view";
 
 } else if ($action == "upload") {
+if (isset($_POST["action"]) && $_POST["action"] == "upload") {
+    $allowed_types = ["image/png", "image/jpeg"];
+    $check_file = $_FILES["check_file"]["type"];
+    $file_size = $_FILES["check_file"]["size"];
 
-    $query = "SELECT * FROM checks WHERE userid=? AND name=?";
-
-    $stmt = $mysqli->prepare($query);
-    $stmt->bind_param("ss", $_SESSION['userid'], $name);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        echo "A check of that name already exists<br>";
+    if (!in_array($check_file, $allowed_types)) {
+        echo "<div class=\"alert alert-danger\" role=\"alert\">Error: Only PNG and JPEG files are allowed!</div>";
+    } elseif ($file_size > (3 * 1024 * 1024)) { // 3 MB limit
+        echo "<div class=\"alert alert-danger\" role=\"alert\">Error: File size should not exceed 1 MB!</div>";
     } else {
-        if (count($_FILES) > 0 && array_key_exists('check_file', $_FILES)) {
+        $query = "SELECT * FROM checks WHERE userid=? AND name=?";
 
-            $upload_filename_items = explode(".", $_FILES['check_file']['name']);
-            $ext = $upload_filename_items[count($upload_filename_items) - 1];
+        $stmt = $mysqli->prepare($query);
+        $stmt->bind_param("ss", $_SESSION['userid'], $name);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 1) {
+            echo "A check of that name already exists<br>";
+        } else {
+            if (count($_FILES) > 0 && array_key_exists('check_file', $_FILES)) {
+                $upload_filename_items = explode(".", $_FILES['check_file']['name']);
+                $ext = $upload_filename_items[count($upload_filename_items) - 1];
 
-            $ext = preg_replace("/[^a-zA-Z0-9\.]/", "", $ext);
+                $ext = preg_replace("/[^a-zA-Z0-9\.]/", "", $ext);
 
-            $filename = $_SESSION['user'] . "." . $name . "." . $ext;
-            $src = $_FILES['check_file']['tmp_name'];
+                $filename = $_SESSION['user'] . "." . $name . "." . $ext;
+                $src = $_FILES['check_file']['tmp_name'];
 
-            $full_path = dirname(__FILE__) . "/checks/" . $filename;
-            $move_result = move_uploaded_file($src, $full_path);
+                $full_path = dirname(__FILE__) . "/checks/" . $filename;
+                $move_result = move_uploaded_file($src, $full_path);
 
-            if ($move_result == TRUE) {
-                if (isset($_POST['Filename'])) {
-                    $name = htmlspecialchars($_POST['Filename']);
+                if ($move_result == TRUE) {
+                    if (isset($_POST['Filename'])) {
+                        $name = htmlspecialchars($_POST['Filename']);
 
-                    $insert = "INSERT INTO checks (userid, name, filename) VALUES (?, ?, ?)";
-                    $stmt = $mysqli->prepare($insert);
-                    $stmt->bind_param("sss", $_SESSION['userid'], $name, $filename);
-                    $stmt->execute();
+                        $insert = "INSERT INTO checks (userid, name, filename) VALUES (?, ?, ?)";
+                        $stmt = $mysqli->prepare($insert);
+                        $stmt->bind_param("sss", $_SESSION['userid'], $name, $filename);
+                        $stmt->execute();
 
-                    if ($stmt) {
-                        echo "<div>Check uploaded!</div/>";
-                    } else {
-                        echo "<div>Check insert failed!</div/>";
+                        if ($stmt) {
+                            echo "<div>Check uploaded!</div>";
+                        } else {
+                            echo "<div>Check insert failed!</div>";
+                        }
                     }
+                } else {
+                    echo "<div>Upload failed! (Perhaps the file was too big)</div>";
                 }
-
-
-            } else {
-                echo "<div>Upload failed! (Perhaps the file was too big)</div/>";
             }
-            
         }
     }
+}
 
 
     
@@ -143,17 +149,18 @@ if ($action == "logout") {
 
 } elseif ($action=="check_upload") {
 
-     echo "<div class=\"alert alert-warning\" role=\"alert\">Be sure your picture has your Manatee Bank card clearly visible!</div>";
-     echo "<div class=\"alert alert-warning\" role=\"alert\">It may take awhile to process the check</div>";
-
+    echo "<div class=\"alert alert-warning\" role=\"alert\">Be sure your picture has your Manatee Bank card clearly visible!</div>";
+    echo "<div class=\"alert alert-warning\" role=\"alert\">It may take awhile to process the check</div>";
+    
     echo "<br><form method='post' action='account.php' enctype=\"multipart/form-data\"> ";
     echo "File Name: <input type='text' name='Filename' required />";
     echo "<br>";
-    echo "<input type='file' name='check_file' />";
+    echo "File: <input type='file' name='check_file' />";
     echo "<br>";
     echo "<input type='hidden' name='action' value='upload'/>";
-
+    
     echo "<button class='btn btn-default'  type='submit'>Upload Check</button></form>";
+    
     
 } elseif ($action=="check_view") {
 
