@@ -7,13 +7,13 @@
 
 <?php
 
-if (!array_key_exists('action', $_GET) && !array_key_exists('action', $_POST)) {
-    $action = 'view';
+$action = 'view';
+if (array_key_exists('action', $_GET)) {
+    $action = filter_input(INPUT_GET, 'action', FILTER_SANITIZE_STRING);
 } elseif (array_key_exists('action', $_POST)) {
-    $action = $_POST['action'];
-} else {
-    $action = $_GET['action'];
+    $action = filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING);
 }
+
 $action = htmlspecialchars($action);
 $name = htmlspecialchars($_POST['name']);
 // POST actions
