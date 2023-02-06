@@ -15,7 +15,7 @@ if (array_key_exists('username', $_POST) && array_key_exists('password', $_POST)
     $stmt->bind_param("s", $username);
     $username = $_POST['username'];
     $fullname = $_POST['fullname'];
-	$password = md5($_POST['password']);
+	$password = password_hash($_POST['password'], PASSWORD_BCRYPT); 
 
     $stmt->execute();
     $result = $stmt->get_result();
