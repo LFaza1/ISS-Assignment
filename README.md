@@ -1,11 +1,16 @@
 # Manatee Bank
 
-> Vulnerable Web App
+# Member names and index numbers:
+  L.M.F.Hussain - 2020/IS/047 
+  Khadijah Azward - 2020/IS/011
+  M.N.F.Nazma  - 2020/IS/069 
+  MJ.Ahamed Rujhan - 2020/IS/086
 
-## DO NOT USE ON A PRODUCTION SYSTEM!!!!!!!
+# Github link to the original project 
+https://github.com/bocajspear1/manatee-bank-web-app#readme
 
-This app is very vulnerable!
+# Github link to the modified project after fixing the vulnerabilities 
+https://github.com/LFaza1/ISS-Assignment
 
-### Requirements
-
-Requires `mysqli` php extension. Database configuration is in `manatee.sql`.
+# Link to a Youtube video describing the vulnerabilities and the fixes done.
+https://youtu.be/7qLVIv8fWYE
