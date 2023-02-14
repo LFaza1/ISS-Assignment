@@ -14,29 +14,26 @@ include 'includes/header.php' ?>
         <li><a href="page.php?page=loans.php">Loans</a></li>
     </ul>
     <section id="page-content">
-        <?php 
+                <?php
+        //code Vulnarable to Directory Traversal Attack
+        /* if (array_key_exists('page', $_GET)) {
 
+            include "pages/" . $_GET['page'];
+        } else {
+            echo ("<div>Page does not exist</div>");
+        }
+        */
 
-            if (array_key_exists('page', $_GET) ) {
-                switch ($_GET['page']) {
-                    case 'about.php':
-                        include 'pages/about.php';
-                        break;
-                    case 'accounts.php':
-                        include 'pages/accounts.php';
-                        break;
-                    case 'checks.php':
-                        include 'pages/checks.php';
-                        break;
-                    case 'loans.php':
-                        include 'pages/loans.php';
-                        break;
-                }
-            } else {
-                echo("<div>Page does not exist</div>");
-            }
+        //fixed code 
+        $valid_pages = array('about.php', 'accounts.php', 'checks.php', 'loans.php');
 
+        if (array_key_exists('page', $_GET) && in_array($_GET["page"], $valid_pages)) {
+            include "pages/" . $_GET['page'];
+        } else {
+            echo ("<div>Page does not exist</div>");
+        }
         ?>
+        
     </section>
 
 </main>
